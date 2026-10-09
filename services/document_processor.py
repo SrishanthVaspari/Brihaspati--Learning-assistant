@@ -1,5 +1,5 @@
 import os
-import fitz  # PyMuPDF
+import pymupdf  # PyMuPDF
 from pptx import Presentation
 from docx import Document
 
@@ -19,7 +19,7 @@ def extract_text(file_path: str) -> tuple[str, dict]:
 
     try:
         if ext == '.pdf':
-            doc = fitz.open(file_path)
+            doc = pymupdf.open(file_path)
             text_parts = []
             for i, page in enumerate(doc):
                 text_parts.append(f"--- Page {i + 1} ---\n{page.get_text()}")

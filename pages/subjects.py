@@ -6,7 +6,7 @@ st.set_page_config(page_title="Subjects", layout="wide")
 
 st.title("🎓 Subjects")
 
-engine = get_engine("data/brihaspati.db")
+engine = get_engine()
 session = get_session(engine)
 
 # Add subject form

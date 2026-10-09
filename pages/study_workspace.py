@@ -9,7 +9,7 @@ st.set_page_config(page_title="Study Workspace", layout="wide")
 st.title("📚 Study Workspace")
 
 # Initialize session
-engine = get_engine("data/brihaspati.db")
+engine = get_engine()
 session = get_session(engine)
 
 # Subject selection
@@ -36,11 +36,10 @@ if selected_subject_name:
         doc = Document(
             subject_id=subject_id,
             filename=uploaded_file.name,
-            original_name=uploaded_file.name,
+            original_filename=uploaded_file.name,
             file_type=os.path.splitext(uploaded_file.name)[1].lower()[1:],
-            file_path=file_path,
-            text_content=text,
-            processed=True
+            text=text,
+            page_count=meta.get("page_count") or meta.get("slide_count") or 0
         )
         session.add(doc)
         session.commit()
@@ -49,8 +48,7 @@ if selected_subject_name:
     # List sources
     docs = session.query(Document).filter(Document.subject_id == subject_id).all()
     for d in docs:
-        if st.expander(f"{d.original_name} (Uploaded: {d.uploaded_at.date()})"):
-            st.write(d.text_content[:500] + "...")
-            st.code(d.file_path)
+        if st.expander(f"{d.original_filename} (Uploaded: {d.created_at.date()})"):
+            st.write(d.text[:500] + "...")
 
 session.close()

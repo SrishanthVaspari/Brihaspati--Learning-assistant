@@ -8,7 +8,7 @@ st.set_page_config(page_title="Dashboard", layout="wide")
 st.title("📊 Dashboard")
 
 # Initialize session
-engine = get_engine("data/brihaspati.db")
+engine = get_engine()
 session = get_session(engine)
 
 # Metrics
