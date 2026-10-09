@@ -1,0 +1,13 @@
+venv/
+__pycache__/
+*.pyc
+.env
+data/brihaspati.db
+data/documents/
+data/vector_index/
+*.egg-info/
+dist/
+build/
+.streamlit/secrets.toml
+credentials.json
+token.json
