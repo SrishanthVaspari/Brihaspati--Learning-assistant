@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brihaspati — AI Study Assistant & Productivity OS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased h-screen flex overflow-hidden">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between select-none">
+    <div>
+      <div class="p-6 flex items-center space-x-3 border-b border-slate-800">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+          <i class="fa-solid fa-brain text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg tracking-tight bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Brihaspati</h1>
+          <p class="text-xs text-slate-400">Student Study OS v1.0</p>
+        </div>
+      </div>
+      
+      <nav class="p-4 space-y-1.5">
+        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition bg-indigo-600 text-white shadow-lg shadow-indigo-600/20">
+          <i class="fa-solid fa-house w-5"></i><span>Dashboard</span>
+        </button>
+        <button onclick="switchTab('chat')" id="nav-chat" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-slate-400 hover:bg-slate-800 hover:text-slate-200">
+          <i class="fa-solid fa-sparkles w-5"></i><span>AI Study Coach</span>
+        </button>
+        <button onclick="switchTab('pomodoro')" id="nav-pomodoro" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-slate-400 hover:bg-slate-800 hover:text-slate-200">
+          <i class="fa-solid fa-stopwatch w-5"></i><span>Focus Timer</span>
+        </button>
+        <button onclick="switchTab('tasks')" id="nav-tasks" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-slate-400 hover:bg-slate-800 hover:text-slate-200">
+          <i class="fa-solid fa-list-check w-5"></i><span>Task Manager</span>
+        </button>
+        <button onclick="switchTab('guard')" id="nav-guard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-slate-400 hover:bg-slate-800 hover:text-slate-200">
+          <i class="fa-solid fa-shield-halved w-5"></i><span>Focus Guard</span>
+        </button>
+      </nav>
+    </div>
+
+    <div class="p-4 border-t border-slate-800">
+      <div class="bg-slate-800/50 rounded-xl p-3 flex items-center space-x-3">
+        <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">AI</div>
+        <div class="overflow-hidden">
+          <p class="text-xs font-semibold text-slate-200 truncate">Gemini & Groq Active</p>
+          <p class="text-[10px] text-emerald-400 flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>Fully Offline Ready</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 flex flex-col bg-slate-950 overflow-hidden">
+    
+    <!-- Topbar -->
+    <header class="h-16 border-b border-slate-800 px-8 flex items-center justify-between bg-slate-900/50 backdrop-blur">
+      <div class="flex items-center space-x-4">
+        <h2 id="page-title" class="text-xl font-bold text-white tracking-tight">Dashboard</h2>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button onclick="triggerEmergencyFocus()" class="bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/30 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center space-x-2">
+          <i class="fa-solid fa-triangle-exclamation"></i><span>Emergency Focus</span>
+        </button>
+        <div class="text-xs text-slate-400 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 font-mono" id="clock">00:00:00</div>
+      </div>
+    </header>
+
+    <!-- Content Views -->
+    <div class="flex-1 overflow-y-auto p-8 relative">
+
+      <!-- DASHBOARD TAB -->
+      <div id="tab-dashboard" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 relative overflow-hidden">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Study Streak</p>
+                <h3 class="text-3xl font-bold text-white mt-2">5 Days</h3>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-fire"></i>
+              </div>
+            </div>
+            <p class="text-xs text-emerald-400 mt-4 flex items-center"><i class="fa-solid fa-arrow-trend-up mr-1"></i> +2 days from last week</p>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 relative overflow-hidden">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Focus Time Today</p>
+                <h3 class="text-3xl font-bold text-white mt-2" id="dash-focus-time">3h 45m</h3>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-violet-500/10 text-violet-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+            </div>
+            <p class="text-xs text-violet-400 mt-4">Goal: 4h 00m daily</p>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 relative overflow-hidden">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Tasks Completed</p>
+                <h3 class="text-3xl font-bold text-white mt-2" id="dash-tasks-count">8 / 10</h3>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+            </div>
+            <p class="text-xs text-emerald-400 mt-4">80% completion rate</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-lg font-bold text-white mb-4">Recent AI Study Recommendations</h3>
+            <div class="space-y-3">
+              <div class="p-4 bg-slate-800/50 rounded-xl border border-slate-800 hover:border-indigo-500/50 transition cursor-pointer" onclick="switchTab('chat')">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-sm font-semibold text-indigo-300">JEE Physics: Rotational Motion One-Shot</h4>
+                  <span class="text-xs bg-indigo-500/20 text-indigo-300 px-2.5 py-1 rounded-full">Recommended</span>
+                </div>
+                <p class="text-xs text-slate-400 mt-2">Watch high-yield lectures and solve core moment of inertia problems.</p>
+              </div>
+              <div class="p-4 bg-slate-800/50 rounded-xl border border-slate-800 hover:border-indigo-500/50 transition cursor-pointer" onclick="switchTab('chat')">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-sm font-semibold text-indigo-300">Organic Chemistry: Name Reactions Revision</h4>
+                  <span class="text-xs bg-violet-500/20 text-violet-300 px-2.5 py-1 rounded-full">High Priority</span>
+                </div>
+                <p class="text-xs text-slate-400 mt-2">Revise Aldol condensation, Cannizzaro, and Gattermann reactions.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
+            <div>
+              <h3 class="text-lg font-bold text-white mb-2">Focus Guard Status</h3>
+              <p class="text-xs text-slate-400 mb-4">Active window monitoring & distraction blocking is protecting your study session.</p>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between p-3 bg-slate-800/40 rounded-xl">
+                  <span class="text-xs font-medium text-slate-300">App Blocker</span>
+                  <span class="px-2 py-0.5 text-[10px] bg-emerald-500/20 text-emerald-400 rounded font-bold">ACTIVE</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-slate-800/40 rounded-xl">
+                  <span class="text-xs font-medium text-slate-300">Web Policy Filter</span>
+                  <span class="px-2 py-0.5 text-[10px] bg-emerald-500/20 text-emerald-400 rounded font-bold">ACTIVE</span>
+                </div>
+              </div>
+            </div>
+            <button onclick="switchTab('guard')" class="w-full mt-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl transition">Configure Guard</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI STUDY COACH TAB -->
+      <div id="tab-chat" class="hidden h-full flex flex-col">
+        <div class="flex-1 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col overflow-hidden">
+          <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-sparkles"></i></div>
+              <div>
+                <h3 class="text-sm font-bold text-white">Brihaspati AI Coach</h3>
+                <p class="text-[10px] text-slate-400">Powered by Gemini & Groq APIs</p>
+              </div>
+            </div>
+          </div>
+          <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4">
+            <div class="flex items-start space-x-3">
+              <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold">AI</div>
+              <div class="bg-slate-800 p-4 rounded-2xl max-w-xl text-sm text-slate-200 border border-slate-700/50">
+                Hello! I am Brihaspati, your personal AI study assistant & productivity manager. How can I help you study, manage your day, or solve a tough problem today?
+              </div>
+            </div>
+          </div>
+          <div class="p-4 border-t border-slate-800 bg-slate-900/80">
+            <div class="flex items-center space-x-3">
+              <input type="text" id="chat-input" placeholder="Ask a study question, request a concept explanation, or plan your day..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition" onkeydown="if(event.key==='Enter') sendMessage()" />
+              <button onclick="sendMessage()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl text-sm font-semibold transition shadow-lg shadow-indigo-600/20">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOCUS TIMER TAB -->
+      <div id="tab-pomodoro" class="hidden flex flex-col items-center justify-center h-full">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-10 max-w-md w-full text-center shadow-2xl">
+          <h3 class="text-lg font-bold text-slate-300 mb-6">Pomodoro Focus Timer</h3>
+          <div class="text-7xl font-extrabold font-mono text-white tracking-wider my-6" id="timer-display">25:00</div>
+          <div class="flex justify-center space-x-4 mt-8">
+            <button onclick="startTimer()" id="btn-start" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-3 rounded-xl font-semibold text-sm transition shadow-lg shadow-indigo-600/20">Start Focus</button>
+            <button onclick="pauseTimer()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-6 py-3 rounded-xl font-semibold text-sm transition">Pause</button>
+            <button onclick="resetTimer()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-6 py-3 rounded-xl font-semibold text-sm transition">Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TASKS TAB -->
+      <div id="tab-tasks" class="hidden space-y-6 max-w-3xl mx-auto">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xl font-bold text-white">Today's Study Tasks</h3>
+          <button onclick="addTask()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2">
+            <i class="fa-solid fa-plus"></i><span>Add Task</span>
+          </button>
+        </div>
+        <div id="task-list" class="space-y-3">
+          <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <input type="checkbox" checked class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 bg-slate-800 border-slate-700" />
+              <span class="text-sm font-medium text-slate-300 line-through">Complete Physics Chapter 3 Numericals</span>
+            </div>
+            <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-full">Completed</span>
+          </div>
+          <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <input type="checkbox" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 bg-slate-800 border-slate-700" />
+              <span class="text-sm font-medium text-white">Revise Organic Chemistry Name Reactions</span>
+            </div>
+            <span class="text-xs bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-full">Pending</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOCUS GUARD TAB -->
+      <div id="tab-guard" class="hidden space-y-6 max-w-4xl mx-auto">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h3 class="text-xl font-bold text-white mb-2">Focus Guard Protection Panel</h3>
+          <p class="text-sm text-slate-400 mb-6">Active window monitoring ensures you stay away from distracting applications during study hours.</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 bg-slate-800/40 rounded-xl border border-slate-800 flex items-center justify-between">
+              <div>
+                <h4 class="text-sm font-semibold text-white">Distracting App Blocking</h4>
+                <p class="text-xs text-slate-400 mt-0.5">Automatically detects games and social media.</p>
+              </div>
+              <input type="checkbox" checked class="w-5 h-5 rounded text-indigo-600 bg-slate-800 border-slate-700" />
+            </div>
+            <div class="p-4 bg-slate-800/40 rounded-xl border border-slate-800 flex items-center justify-between">
+              <div>
+                <h4 class="text-sm font-semibold text-white">Web Policy Filter</h4>
+                <p class="text-xs text-slate-400 mt-0.5">Blocks non-educational browsing.</p>
+              </div>
+              <input type="checkbox" checked class="w-5 h-5 rounded text-indigo-600 bg-slate-800 border-slate-700" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+window.switchTab = switchTab;
+window.sendMessage = sendMessage;
+window.startTimer = startTimer;
+window.pauseTimer = pauseTimer;
+window.resetTimer = resetTimer;
+window.triggerEmergencyFocus = triggerEmergencyFocus;
+window.addTask = addTask;
+    function switchTab(tabId) {
+      ['dashboard', 'chat', 'pomodoro', 'tasks', 'guard'].forEach(function(t) {
+        var el = document.getElementById('tab-' + t);
+        if (el) el.classList.add('hidden');
+        var nav = document.getElementById('nav-' + t);
+        if (nav) {
+          nav.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-slate-400 hover:bg-slate-800 hover:text-slate-200";
+        }
+      });
+      var target = document.getElementById('tab-' + tabId);
+      if (target) target.classList.remove('hidden');
+      var activeNav = document.getElementById('nav-' + tabId);
+      if (activeNav) {
+        activeNav.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition bg-indigo-600 text-white shadow-lg shadow-indigo-600/20";
+      }
+      var titles = { dashboard: 'Dashboard', chat: 'AI Study Coach', pomodoro: 'Focus Timer', tasks: 'Task Manager', guard: 'Focus Guard' };
+      var titleEl = document.getElementById('page-title');
+      if (titleEl) titleEl.innerText = titles[tabId] || 'Dashboard';
+    }
+
+    setInterval(function() {
+      var clock = document.getElementById('clock');
+      if (clock) clock.innerText = new Date().toLocaleTimeString();
+    }, 1000);
+
+    function sendMessage() {
+      var input = document.getElementById('chat-input');
+      if (!input) return;
+      var text = input.value.trim();
+      if (!text) return;
+      
+      var chat = document.getElementById('chat-messages');
+      if (!chat) return;
+
+      chat.innerHTML += '<div class="flex items-start space-x-3 justify-end"><div class="bg-indigo-600 p-4 rounded-2xl max-w-xl text-sm text-white">' + escapeHtml(text) + '</div><div class="w-8 h-8 rounded-full bg-slate-700 text-slate-200 flex items-center justify-center text-xs font-bold">You</div></div>';
+      input.value = '';
+      chat.scrollTop = chat.scrollHeight;
+
+      setTimeout(function() {
+        var reply = "That's a great study question! Let's break it down step by step to ensure you master this concept for your exam.";
+        if (/youtube|video|lecture/i.test(text)) {
+          reply = "Here is the best high-yield lecture recommendation for your study session:<br><br><a href='https://www.youtube.com/watch?v=dQw4w9WgXcQ' target='_blank' class='text-indigo-400 underline font-semibold flex items-center'><i class='fa-solid fa-play mr-2'></i>Watch Recommended Video Lecture on YouTube</a>";
+        }
+        chat.innerHTML += '<div class="flex items-start space-x-3"><div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold">AI</div><div class="bg-slate-800 p-4 rounded-2xl max-w-xl text-sm text-slate-200 border border-slate-700/50">' + reply + '</div></div>';
+        chat.scrollTop = chat.scrollHeight;
+      }, 800);
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    var timerInterval = null;
+    var timeLeft = 25 * 60;
+    function startTimer() {
+      if (timerInterval) return;
+      timerInterval = setInterval(function() {
+        if (timeLeft > 0) {
+          timeLeft--;
+          var m = Math.floor(timeLeft / 60);
+          var s = timeLeft % 60;
+          var display = document.getElementById('timer-display');
+          if (display) display.innerText = (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+        } else {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          alert('Pomodoro session completed! Take a break.');
+        }
+      }, 1000);
+    }
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+    function resetTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      timeLeft = 25 * 60;
+      var display = document.getElementById('timer-display');
+      if (display) display.innerText = '25:00';
+    }
+
+    function triggerEmergencyFocus() {
+      alert('Emergency Focus activated! All distracting processes and non-study windows restricted.');
+    }
+
+    function addTask() {
+      var taskName = prompt('Enter new task:');
+      if (taskName) {
+        var list = document.getElementById('task-list');
+        if (list) {
+          list.innerHTML += '<div class="p-4 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between"><div class="flex items-center space-x-3"><input type="checkbox" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 bg-slate-800 border-slate-700" /><span class="text-sm font-medium text-white">' + escapeHtml(taskName) + '</span></div><span class="text-xs bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-full">Pending</span></div>';
+        }
+      }
+    }
+  </script>
+</body>
+</html>
