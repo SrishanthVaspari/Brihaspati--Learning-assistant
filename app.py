@@ -14,12 +14,17 @@ load_dotenv(PROJECT_ROOT / ".env")
 Path(PROJECT_ROOT / "data").mkdir(exist_ok=True)
 
 # Database
-from database.db import init_db, get_engine, get_session
-init_db()  # SCHEMA created
+from database.db import init_db, get_engine
+from services.retrieval import RetrievalService
+
+init_db()
 
 # Session state
 if "engine" not in st.session_state:
     st.session_state.engine = get_engine()
+    st.session_state.retrieval = RetrievalService(
+        str(PROJECT_ROOT / os.environ.get("VECTOR_INDEX_DIR", "data/vector_index"))
+    )
 
 # Pages config
 st.set_page_config(page_title="Brihaspati", layout="wide", page_icon="🎓")
@@ -31,5 +36,6 @@ pg = st.navigation([
     st.Page("pages/dashboard.py", title="Dashboard", icon="📊"),
     st.Page("pages/subjects.py", title="Subjects", icon="📚"),
     st.Page("pages/study_workspace.py", title="Workspace", icon="📖"),
+    st.Page("pages/performance.py", title="Performance", icon="📈"),
 ])
 pg.run()

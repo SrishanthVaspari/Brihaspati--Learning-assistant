@@ -15,6 +15,8 @@ class StudentProfile(Base):
     study_hours_per_day = Column(Float, default=4.0)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now())
+    current_streak = Column(Integer, default=0)
+    last_studied_date = Column(DateTime)
 
 class Subject(Base):
     __tablename__ = 'subjects'
@@ -53,7 +55,9 @@ class Topic(Base):
     id = Column(Integer, primary_key=True)
     subject_id = Column(Integer, ForeignKey('subjects.id'))
     name = Column(String, nullable=False)
+    description = Column(Text)
     source_document_id = Column(Integer, ForeignKey('documents.id'), nullable=True)
+    source_document_ids = Column(Text, nullable=True) # JSON store for multiple docs
     syllabus_weightage = Column(Float, default=0.0)
     estimated_hours = Column(Float, default=1.0)
     difficulty = Column(String, default='medium')
@@ -133,6 +137,22 @@ class Roadmap(Base):
     available_hours_per_day = Column(Float, default=0.0)
     plan_json = Column(Text)
 
+class PreparationTracker(Base):
+    __tablename__ = 'preparation_trackers'
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    goal = Column(String)
+    created_at = Column(DateTime, server_default=func.now())
+
+class TrackerTask(Base):
+    __tablename__ = 'tracker_tasks'
+    id = Column(Integer, primary_key=True)
+    tracker_id = Column(Integer, ForeignKey('preparation_trackers.id'))
+    title = Column(String, nullable=False)
+    is_completed = Column(Boolean, default=False)
+    due_date = Column(String)
+    created_at = Column(DateTime, server_default=func.now())
+
 class StudySession(Base):
     __tablename__ = 'study_sessions'
     id = Column(Integer, primary_key=True)
@@ -157,3 +177,46 @@ class Task(Base):
     is_completed = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
     completed_at = Column(DateTime)
+
+class Conversation(Base):
+    __tablename__ = 'conversations'
+    id = Column(Integer, primary_key=True)
+    subject_id = Column(Integer, ForeignKey('subjects.id'))
+    title = Column(String)
+    created_at = Column(DateTime, server_default=func.now())
+    messages = relationship('Message', backref='conversation', cascade='all, delete-orphan')
+
+class Message(Base):
+    __tablename__ = 'messages'
+    id = Column(Integer, primary_key=True)
+    conversation_id = Column(Integer, ForeignKey('conversations.id'))
+    role = Column(String) # user, assistant
+    content = Column(Text)
+    created_at = Column(DateTime, server_default=func.now())
+
+class StudyGuide(Base):
+    __tablename__ = 'study_guides'
+    id = Column(Integer, primary_key=True)
+    subject_id = Column(Integer, ForeignKey('subjects.id'))
+    document_id = Column(Integer, ForeignKey('documents.id'), nullable=True)
+    title = Column(String, nullable=False)
+    content = Column(Text)
+    created_at = Column(DateTime, server_default=func.now())
+
+class FlashcardSet(Base):
+    __tablename__ = 'flashcard_sets'
+    id = Column(Integer, primary_key=True)
+    subject_id = Column(Integer, ForeignKey('subjects.id'))
+    document_id = Column(Integer, ForeignKey('documents.id'), nullable=True)
+    title = Column(String, nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
+
+class Flashcard(Base):
+    __tablename__ = 'flashcards'
+    id = Column(Integer, primary_key=True)
+    set_id = Column(Integer, ForeignKey('flashcard_sets.id'))
+    question = Column(Text, nullable=False)
+    answer = Column(Text, nullable=False)
+    confidence = Column(Integer, default=0) # 0=unreviewed, 1=hard, 2=ok, 3=easy
+    review_count = Column(Integer, default=0)
+    last_reviewed_at = Column(DateTime)

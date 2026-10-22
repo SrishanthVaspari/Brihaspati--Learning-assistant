@@ -6,6 +6,7 @@ langchain>=0.3.0
 langchain-community>=0.3.0
 langchain-openai>=0.2.0
 langchain-chroma>=0.1.2
+langchain-ollama
 chromadb>=0.6.0
 sentence-transformers>=3.0.0
 

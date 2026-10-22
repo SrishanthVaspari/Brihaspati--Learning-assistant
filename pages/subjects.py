@@ -6,8 +6,7 @@ st.set_page_config(page_title="Subjects", layout="wide")
 
 st.title("🎓 Subjects")
 
-engine = get_engine()
-session = get_session(engine)
+session = get_session(st.session_state.engine)
 
 # Add subject form
 with st.form("add_subject"):

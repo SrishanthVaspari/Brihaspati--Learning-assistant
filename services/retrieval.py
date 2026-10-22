@@ -48,6 +48,7 @@ class RetrievalService:
             documents.append(content[:8000])  # cap to avoid token limits
             metadatas.append({
                 "document_id": document_id,
+                "subject_id": sec.get("subject_id"),
                 "section_index": idx,
                 "page": sec.get("page", 0),
                 "title": sec.get("title", "")[:200],
@@ -71,10 +72,22 @@ class RetrievalService:
             return []
 
         where = None
+        # Handle subject_id filtering specifically
+        if subject_id:
+            where = {"subject_id": subject_id}
+
+        # Handle document_ids filtering
+        doc_where = None
         if document_ids and len(document_ids) == 1:
-            where = {"document_id": document_ids[0]}
+            doc_where = {"document_id": document_ids[0]}
         elif document_ids and len(document_ids) > 1:
-            where = {"document_id": {"$in": document_ids}}
+            doc_where = {"document_id": {"$in": document_ids}}
+
+        if doc_where:
+            if where:
+                where = {"$and": [where, doc_where]}
+            else:
+                where = doc_where
 
         try:
             results = self._collection.query(

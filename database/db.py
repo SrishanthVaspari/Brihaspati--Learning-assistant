@@ -58,7 +58,9 @@ CREATE TABLE IF NOT EXISTS student_profile (
     max_attendance_absence_pct REAL DEFAULT 25.0,
     study_hours_per_day REAL DEFAULT 4.0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    current_streak INTEGER DEFAULT 0,
+    last_studied_date TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS subjects (

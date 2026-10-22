@@ -28,12 +28,13 @@ class TopicRanker:
 
     # ── Topic extraction ───────────────────────────────────────
 
-    def extract_topics(self, subject_id: int,
-                       document_sections: list[dict]) -> list[dict]:
-        """Use AI to identify major topics from document content."""
+    def extract_topics(self, subject_id: int, document_ids: list[int]) -> list[dict]:
+        """Use AI to identify major topics from selected documents."""
+        # Fetch text content from Documents
+        documents = self.db.query(Document).filter(Document.id.in_(document_ids)).all()
         context = "\n".join(
-            f"{s.get('title', '')}\n{s.get('content', '')}"
-            for s in document_sections
+            f"{d.original_filename}\n{d.text}"
+            for d in documents if d.text
         )[:10000]
 
         prompt = f"""Identify the major syllabus topics covered in this lecture material.
@@ -52,7 +53,7 @@ must be topics from the same list or empty."""
         topics = self._validate_topics(data)
 
         if not topics:
-            topics = self._extract_topics_heuristic(document_sections)
+            topics = self._extract_topics_heuristic([{"title": d.original_filename, "content": d.text} for d in documents])
 
         # Persist topics (skip duplicates by name within subject).
         existing = {t.name.lower() for t in
@@ -72,9 +73,7 @@ must be topics from the same list or empty."""
                 description=t.get("description", ""),
                 estimated_hours=float(t.get("estimated_hours", 1.0) or 1.0),
                 is_prerequisite_met=not prereq_ids,
-                source_document_ids=json.dumps(
-                    list({s.get("document_id") for s in document_sections
-                          if s.get("document_id")})),
+                source_document_ids=json.dumps(document_ids),
             )
             self.db.add(topic)
             created.append(t)
@@ -126,13 +125,30 @@ must be topics from the same list or empty."""
 
     # ── Ranking ────────────────────────────────────────────────
 
-    def rank_topics(self, subject_id: int) -> list[dict]:
+    def rank_topics(self, subject_id: int, document_ids: list[int] = None) -> list[dict]:
         """Score all topics 0–100 with a transparent weighted formula."""
         subject = self.db.get(Subject, subject_id)
-        topics = (self.db.query(Topic)
-                  .filter(Topic.subject_id == subject_id)
-                  .order_by(Topic.name)
-                  .all())
+        query = self.db.query(Topic).filter(Topic.subject_id == subject_id)
+
+        # Filter by selected documents if provided
+        if document_ids:
+            # Topic has source_document_ids (JSON string)
+            # This is slow, but acceptable for now without changing DB schema
+            import json
+            def matches_doc(topic):
+                try:
+                    ids = json.loads(topic.source_document_ids or "[]")
+                    # If topic has no doc IDs, treat it as belonging to ALL topics in this context,
+                    # or handle appropriately depending on desired behavior.
+                    if not ids:
+                        return True
+                    return any(id in document_ids for id in ids)
+                except:
+                    return False
+            topics = [t for t in query.all() if matches_doc(t)]
+        else:
+            topics = query.order_by(Topic.name).all()
+
         if not topics:
             return []
 
